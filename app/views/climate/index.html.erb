@@ -1,0 +1,81 @@
+<div class="container">
+  <div class="row" style="margin-top: 15px;">
+
+    <%= form_tag(climate_path, method: :get, role: 'form') do %>
+        <div class="form-group form-inline" >
+          <label class="cityLabel"> Please Enter the City:</label>
+          <%= text_field_tag 'city', '', placeholder: 'Please Enter City here', autocomplete: :off, autofocus: true , class: 'form-control'%>
+          <%= submit_tag "Search", class: "btn btn-primary submitButton" %>
+        </div>
+    <% end %>
+  </div>
+  <div class="row" style="margin-top: 15px;">
+    <center>
+      <div id="loader"></div>
+    </center>
+  </div>
+
+  <div class="row" style="margin-bottom: 30px;">
+    <center>
+      <div id="climate-info">
+      </div>
+    </center>
+  </div>
+</div>
+<script>
+  $("#city").autocomplete({
+    minLength: 1,
+    source: function(request, response) {
+      var keyword = $("#city").val();
+      $.ajax({
+        type: "POST",
+        url: "/get_suggestions",
+        data: { keyword : keyword },
+        success: function(data) {
+          if(data.length>0) {
+            $("#climate-info").html('')
+            var suggestions = data.error? [] : $.map(data, function(entry) {
+              return {
+                label: entry.value,
+                code: entry.code
+              };
+            });
+            response(suggestions);
+          } else {
+            $("#climate-info").html('')
+            $("#climate-info").html('Whoops! Looks like that city does not exist, try another one.')
+          }
+        }
+      })
+    },
+    select: function(event, entry) {
+      call_climate_api(entry.item.label, entry.item.code)
+    }
+  }).data("ui-autocomplete")._renderItem = function(ul, entry) {
+      return $("<li></li>")
+        .data("entry.autocomplete", entry)
+        .append("<span class='pull-right'>" + entry.label + "</span>")
+        .appendTo(ul);
+  };
+
+  function call_climate_api(city, code) {
+    localStorage.setItem("api_city", city);
+    localStorage.setItem("api_code", code);
+    $("#loader").addClass('loader')
+    $("#weather-info").html('')
+    $.ajax({
+      type: "GET",
+      url: "/climate/forecast",
+      data: { code: code }
+    }).done(function() {
+      $("#loader").removeClass('loader')
+    });
+  }
+
+  city = localStorage.getItem("api_city")
+  code = localStorage.getItem("api_code")
+  if(city && code) {
+    $('#city').val(city);
+    call_climate_api(city, code)
+  }
+</script>

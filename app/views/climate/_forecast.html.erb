@@ -1,0 +1,37 @@
+<% if false %>
+  <h3>Sorry, no info found for requested location!</h3>
+<% else %>
+  <% location = @forecast['results']['location'] %>
+  <% condition = @forecast['results']['condition'] %>
+  <% forecast = @forecast['results']['forecast'] %>
+  <h2>Showing weather information for <%= "#{location['city']}, #{location['region']}, #{location['country']}" %> </h2>
+  <div class="row">  
+     <div class="card text-white bg-secondary" style="margin: auto; margin-bottom: 30px">
+      <div class="card-header">
+         <cite title="Source Title">Current Weather - <%= Time.now %></cite>
+      </div>
+      <div class="card-body">
+        <blockquote class="blockquote mb-0">
+          <h5 class="card-title"><%= condition['condition'] %></h5>
+          <p class="card-text">High: <%= condition['high'] %></p>
+          <p class="card-text">Low: <%= condition['high'] %></p>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+ 
+ <h3>Forecast for next 10 days</h3> 
+  <div class="row"> 
+  <% forecast.each do |item| %> 
+    <div class="card text-white bg-info mb-3" style="max-width: 18rem;">
+      <div class="card-header"><%= item['date'].to_date %></div>
+      <div class="card-body">
+        <h5 class="card-title"><%= item['condition'] %></h5>
+        <p class="card-text">High: <%= item['high'] %></p>
+        <p class="card-text">Low: <%= item['low'] %></p>
+      </div>
+  </div>
+  <% end %>
+</div>
+<% end %>
+

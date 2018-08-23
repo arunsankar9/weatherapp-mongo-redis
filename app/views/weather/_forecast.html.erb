@@ -1,0 +1,30 @@
+<div class="container" style="margin-bottom: 30px">
+
+  <% if @forecast['query']['count'] == 0 || @forecast['query']['results']['channel']['item'].nil? %>
+  <h3>Sorry, no info found for requested location!</h3>
+<% else %>
+  <% city, region, country = parse_location_info(@forecast) %>
+  <% dates, days, high, low, conditions = parse_forecast_info(@forecast) %>
+  <% distance, pressure, speed, temperature = parse_units_info(@forecast) %>
+  <% date, temp, text = parse_current_weather(@forecast) %>
+
+  <h2>Showing weather information for <%= "#{city}, #{region}, #{country}" %> </h2>
+  <h3>Current Weather - <%= "#{temp}, #{text}" %> (Last updated on <%= date %>)</h3>
+  <h3>Forecast for next 10 days</h3>
+  <table>
+    <% [dates, days, high, low, conditions].each do |item| %>
+      <tr>
+        <% dates.count.times do |i| %>
+          <td><%= item[i] %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
+
+
+<% end %>
+  
+
+</div>
+
+

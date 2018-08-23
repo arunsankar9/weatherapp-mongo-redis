@@ -1,0 +1,42 @@
+  <u><h1>Check weather instantly</h1></u>
+
+  <%= form_tag do %>
+    <%= text_field_tag 'query', '', autocomplete: :off, autofocus: true %>
+    <%= submit_tag 'Search', onclick: "get_weather_info(event)", id: 'get_weather' %>
+  <% end %>
+
+  <center>
+    <div id="loader"></div>
+  </center>
+
+  <center>
+    <div id="weather-info">
+    </div>
+  </center>
+
+  <script>
+    city = localStorage.getItem("city")
+    if(city) {
+      $('#query').val(city);
+      call_weather_forecast_api()
+    }
+    function get_weather_info(e) {
+      e.preventDefault();
+      call_weather_forecast_api()
+    }
+    function call_weather_forecast_api() {
+      city = $('#query').val();
+      localStorage.setItem("city", city);
+      $("#loader").addClass('loader')
+      $("#get_weather").prop('disabled', true);
+      $("#weather-info").html('')
+      $.ajax({
+        type: "GET",
+        url: "/weather/forecast",
+        data: { city: city }
+      }).done(function() {
+        $("#loader").removeClass('loader')
+        $("#get_weather").prop('disabled', false);
+      });
+    }
+  </script>
